@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Australian iron ore decarbonisation pathways</title>
+<style>
+:root{
+  --ink:#15181B; --ink-2:#4A5157; --ink-3:#767E85;
+  --paper:#F2F4F4; --card:#FFFFFF; --sunk:#E9ECEC;
+  --rule:rgba(21,24,27,.13); --rule-2:rgba(21,24,27,.28);
+  --link:#0F6E56;
+  --go-bg:#E1F5EE; --go-fg:#085041;
+  --mid-bg:#FAEEDA; --mid-fg:#633806;
+  --stop-bg:#FCEBEB; --stop-fg:#791F1F;
+  --neutral-bg:#E9ECEC; --neutral-fg:#4A5157;
+  --radius:8px;
+  --sans:"Inter","Helvetica Neue",Helvetica,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#EDEFEF; --ink-2:#A8B0B6; --ink-3:#7C858C;
+    --paper:#15181B; --card:#1E2225; --sunk:#252A2E;
+    --rule:rgba(237,239,239,.15); --rule-2:rgba(237,239,239,.3);
+    --link:#5DCAA5;
+    --go-bg:#0C3A2F; --go-fg:#9FE1CB;
+    --mid-bg:#3B2405; --mid-fg:#FAC775;
+    --stop-bg:#3E1717; --stop-fg:#F09595;
+    --neutral-bg:#252A2E; --neutral-fg:#A8B0B6;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#EDEFEF; --ink-2:#A8B0B6; --ink-3:#7C858C;
+  --paper:#15181B; --card:#1E2225; --sunk:#252A2E;
+  --rule:rgba(237,239,239,.15); --rule-2:rgba(237,239,239,.3);
+  --link:#5DCAA5;
+  --go-bg:#0C3A2F; --go-fg:#9FE1CB;
+  --mid-bg:#3B2405; --mid-fg:#FAC775;
+  --stop-bg:#3E1717; --stop-fg:#F09595;
+  --neutral-bg:#252A2E; --neutral-fg:#A8B0B6;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--sans); font-size:16px; line-height:1.6;
+  font-weight:400; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px; margin:0 auto; padding:40px 24px 64px}
+header{border-bottom:1px solid var(--rule-2); padding-bottom:20px; margin-bottom:28px}
+h1{font-size:28px; font-weight:500; letter-spacing:-.02em; margin:0 0 6px; line-height:1.2}
+.sub{color:var(--ink-2); font-size:15px; margin:0; max-width:68ch}
+.meta{color:var(--ink-3); font-size:13px; margin:14px 0 0}
+
+.stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin:0 0 28px}
+.stat{background:var(--sunk); border-radius:var(--radius); padding:14px 16px}
+.stat .k{font-size:13px; color:var(--ink-2); margin:0 0 4px}
+.stat .v{font-size:26px; font-weight:500; letter-spacing:-.02em; margin:0; line-height:1.1}
+.stat .n{font-size:13px; color:var(--ink-2); margin:5px 0 0}
+
+.legend{display:flex; gap:18px; flex-wrap:wrap; margin:0 0 14px; font-size:13px; color:var(--ink-2)}
+.legend span{display:inline-flex; align-items:center; gap:7px}
+.sw{width:12px; height:12px; border-radius:3px; display:inline-block}
+
+.grid{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px}
+.col{display:flex; flex-direction:column}
+.hd{font-size:13px; font-weight:500; padding:9px 7px; border-radius:var(--radius) var(--radius) 0 0; text-align:center; line-height:1.3}
+.vol{font-size:13px; padding:6px; border-radius:0 0 var(--radius) var(--radius); text-align:center; border-top:1px solid var(--rule)}
+.arrow{height:15px; display:flex; align-items:center; justify-content:center; color:var(--ink-3); font-size:12px}
+.step{
+  border:1px solid var(--rule); border-radius:var(--radius); padding:10px 7px;
+  font-size:13px; line-height:1.35; background:var(--card); color:var(--ink);
+  text-align:center; min-height:56px; width:100%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:inherit; cursor:pointer; transition:border-color .12s, background .12s;
+}
+.step:hover{border-color:var(--rule-2)}
+.step:focus-visible{outline:2px solid var(--link); outline-offset:2px}
+.step[aria-pressed="true"]{border:2px solid var(--link); padding:9px 6px; font-weight:500}
+.emit{font-size:13px; font-weight:500; padding:9px 7px; border-radius:var(--radius); text-align:center; line-height:1.3; margin-top:2px}
+
+.panel{background:var(--card); border:1px solid var(--rule); border-radius:12px; padding:22px 24px; margin-top:26px}
+.ctx{font-size:13px; color:var(--ink-3); margin:0 0 5px}
+.panel h2{font-size:20px; font-weight:500; letter-spacing:-.01em; margin:0 0 8px; line-height:1.3}
+.desc{font-size:15px; color:var(--ink-2); margin:0 0 20px; max-width:74ch}
+.count{font-size:13px; color:var(--ink-3); margin:0 0 4px}
+.row{display:flex; gap:14px; align-items:flex-start; padding:13px 0; border-bottom:1px solid var(--rule)}
+.row:last-child{border-bottom:none}
+.badge{font-size:13px; font-weight:500; padding:4px 10px; border-radius:var(--radius); white-space:nowrap; min-width:94px; text-align:center; flex-shrink:0}
+.badge.plain{background:var(--card); border:1px solid var(--rule-2); color:var(--ink)}
+.rname{font-size:15px; font-weight:500; margin:0 0 3px}
+.rloc{font-size:13px; font-weight:400; color:var(--ink-3)}
+.rnote{font-size:14px; color:var(--ink-2); margin:0; line-height:1.55}
+a{color:var(--link)}
+.src{font-size:13px; text-decoration:none; border-bottom:1px solid transparent; white-space:nowrap}
+.src:hover{border-bottom-color:currentColor}
+.unver{font-size:13px; color:var(--stop-fg); background:var(--stop-bg); padding:1px 7px; border-radius:4px}
+
+footer{margin-top:36px; padding-top:20px; border-top:1px solid var(--rule); font-size:14px; color:var(--ink-2); max-width:80ch}
+footer p{margin:0 0 10px}
+footer strong{font-weight:500; color:var(--ink)}
+
+@media (max-width:860px){
+  .wrap{padding:28px 16px 48px}
+  h1{font-size:23px}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px}
+  .col{margin-bottom:10px}
+  .row{flex-direction:column; gap:7px}
+  .badge{min-width:0}
+}
+@media (max-width:520px){ .grid{grid-template-columns:minmax(0,1fr)} }
+@media print{
+  body{background:#fff}
+  .step[aria-pressed="true"]{border-color:#000}
+}
+@media (prefers-reduced-motion:reduce){ *{transition:none !important} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Australian iron ore decarbonisation pathways</h1>
+  <p class="sub">Five routes from Australian ore to iron or steel, showing process steps, emissions intensity, volumes and the project register at each step. Select any step to see what sits there.</p>
+  <p class="meta">Compiled September 2026. Every row carries a linked source or an explicit unverified flag. Figures mix calendar years, financial years and rolling twelve-month windows — each row states its basis.</p>
+</header>
+
+<div class="stats">
+  <div class="stat"><p class="k">Exported, 2024</p><p class="v">902 Mt</p><p class="n">86.1% to China by value</p></div>
+  <div class="stat"><p class="k">DR-capable concentrate</p><p class="v">4.7%</p><p class="n">~42 Mt of WA production</p></div>
+  <div class="stat"><p class="k">Kept onshore</p><p class="v">~7 Mt</p><p class="n">0.8%, inferred not reported</p></div>
+</div>
+
+<div class="legend">
+  <span><i class="sw" style="background:var(--go-bg);border:1px solid var(--go-fg)"></i>Commercial technology</span>
+  <span><i class="sw" style="background:var(--mid-bg);border:1px solid var(--mid-fg)"></i>Pre-commercial</span>
+  <span><i class="sw" style="background:var(--neutral-bg);border:1px solid var(--ink-3)"></i>Incumbent, coal-based</span>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<section class="panel">
+  <p class="ctx" id="ctx"></p>
+  <h2 id="stt"></h2>
+  <p class="desc" id="std"></p>
+  <p class="count" id="cnt"></p>
+  <div id="list"></div>
+</section>
+
+<footer>
+  <p><strong>Known limitations.</strong> The ~110 Mt "all others" producer figure and the hematite/concentrate volume split are derived from WATC totals, not published breakdowns. The ~7 Mt domestic ore consumption applies a 2011–12 BITRE ore-to-steel ratio to current output, so it is an inference. WATC's per-producer product splits do not reconcile with company-reported shipments; the 4.7% concentrate aggregate is the reliable figure.</p>
+  <p><strong>On emissions.</strong> Route intensities are gate-to-gate per tonne of crude steel and exclude mining, shipping and rolling, so they are not directly comparable with a CBAM embedded-emissions calculation. No operating emissions benchmark exists for the DRI-ESF route; the 0.40 t CO₂-e near-zero threshold is a definition, not a measurement.</p>
+</footer>
+
+</div>
+
+<script>
+var W="https://www.watc.wa.gov.au/media/vwynvtpr/wa-iron-ore-profile-may-2026.pdf",
+    RT="https://www.sec.gov/Archives/edgar/data/863064/000162828026009503/ye25-pressreleasex19feb.htm",
+    SN="https://www.steelonthenet.com/resources/countries/australia.html",
+    AB="https://www.abc.net.au/news/2026-05-27/two-bidders-remain-for-whyalla-steelworks/106724890",
+    BI="https://www.bitre.gov.au/sites/default/files/Freightline_02.pdf",
+    IE="https://ieefa.org/australian-green-iron-tracker",
+    ID="https://ieefa.org/resources/dri-smelters-promise-progress-and-barriers",
+    RB="https://www.riotinto.com/en/news/releases/2025/rio-tinto-partners-with-calix-to-test-low-emissions-steel-making-in-western-australia-pauses-bioiron",
+    FM="https://www.fortescue.com/en/articles/fortescue-produces-first-hot-metal-in-milestone-towards-australian-green-iron",
+    FR="https://www.indexbox.io/blog/fortescue-reports-record-iron-ore-shipments-and-financial-results-for-fy20252026/",
+    AM="https://www.australianmining.com.au/fortescue-hits-operational-excellence-in-fy26-to-support-building-real-zero-pathway",
+    EP="https://www.epa.wa.gov.au/sites/default/files/PER_documentation2/Appendix%207%20GHG%20Emissions%20Assessment.pdf",
+    NS="https://www.woodside.com/docs/default-source/media-releases/20211217-neosmelt-pilot-plant-media-release-final.pdf?sfvrsn=96a66337_3",
+    SP="https://spglobal.com/commodityinsights/en/market-insights/blogs/metals/022321-australia-iron-ore-magnetite-mining-metals-karara-ore";
+
+var D=[
+{id:"a",h:"Hematite, as-is",k:"inc",dt:1,e:"≈2.3 t CO₂/t",v:"~860 Mt/yr",s:[
+ {t:"Crush and screen",d:"Direct shipping ore: crushed, screened, no beneficiation. Three producers account for roughly 90% of Western Australian volume.",p:[
+  {n:"Rio Tinto",l:"2025",g:"326 Mt",x:"Down 0.7%. 66% fines, 34% lump. Rail and port capacity 360 Mt",s:W,sn:"WATC WA Iron Ore Profile"},
+  {n:"BHP",l:"2025",g:"289 Mt",x:"Down 0.1%. 69% fines, 31% lump. Port expanding to 330 Mt",s:W,sn:"WATC WA Iron Ore Profile"},
+  {n:"Fortescue",l:"2025",g:"202 Mt",x:"Up 3.8%. Port capacity 210 Mt",s:W,sn:"WATC WA Iron Ore Profile"},
+  {n:"Mineral Resources, Onslow",l:"2025",g:"24.4 Mt",x:"Up from 4.6 Mt in 2024. 100% fines",s:W,sn:"WATC WA Iron Ore Profile"},
+  {n:"All others",l:"2025",g:"~110 Mt",x:"Roy Hill, Sino Iron, Karara, juniors. Residual I calculated, not published",s:W,sn:"Derived from WATC"}]},
+ {t:"Ship as fines and lump",d:"Product form decides who pays for agglomeration. Fines need a sinter or pellet plant at the customer's end; lump charges directly, which is why it trades at a premium.",p:[
+  {n:"Fines",l:"WA production 2025",g:"69.5%",x:"Under 6.3 mm. Must be sintered or pelletised first",s:W,sn:"WATC, citing S&amp;P Global"},
+  {n:"Lump",l:"WA production 2025",g:"25.8%",x:"6.3–31.5 mm, ~62–63% Fe. Charges direct but off DR spec",s:W,sn:"WATC, citing S&amp;P Global"},
+  {n:"Concentrate",l:"WA production 2025",g:"4.7%",x:"The magnetite stream. Per-producer splits do not reconcile; trust this aggregate",s:W,sn:"WATC, citing S&amp;P Global"},
+  {n:"Port Hedland",l:"2025",g:"550 Mt",x:"60% of WA export volume",s:W,sn:"WATC WA Iron Ore Profile"},
+  {n:"Cape Lambert",l:"2025",g:"161 Mt",x:"18%",s:W,sn:"WATC WA Iron Ore Profile"},
+  {n:"Dampier",l:"2025",g:"142 Mt",x:"16%",s:W,sn:"WATC WA Iron Ore Profile"},
+  {n:"All other ports",l:"2025",g:"62 Mt",x:"Up 42%, driven by the Onslow ramp-up",s:W,sn:"WATC WA Iron Ore Profile"}]},
+ {t:"Blast furnace",d:"Where the ore is consumed and where the 2.3 tonnes of CO₂ are emitted. The green iron target markets are about a tenth of the trade.",p:[
+  {n:"China",l:"Year to Mar 2026, by value",g:"86.1%",x:"$101.7 bn. Imported 1,238 Mt globally in 2024, 72% of world trade",s:W,sn:"WATC, citing ABS and DISR"},
+  {n:"South Korea",l:"Year to Mar 2026",g:"5.3%",x:"$6.3 bn. Imported 69 Mt globally in 2024",s:W,sn:"WATC, citing ABS"},
+  {n:"Japan",l:"Year to Mar 2026",g:"5.2%",x:"$6.2 bn. Imported 96 Mt globally in 2024",s:W,sn:"WATC, citing ABS"},
+  {n:"All others",l:"Year to Mar 2026",g:"3.4%",x:"$4.0 bn",s:W,sn:"WATC, citing ABS"},
+  {n:"Rio Tinto SP10 grade drift",l:"H2 2025",g:"10%",x:"Of Pilbara shipments, down from 20%, after the new Pilbara Blend from July 2025",s:RT,sn:"Rio Tinto FY25 results"}]},
+ {t:"Oxygen furnace",d:"Australia's own consumption. Two integrated works, both blast furnace based. The ~7 Mt ore figure is inferred from steel output and a 2011–12 BITRE ratio, not a reported number.",p:[
+  {n:"BlueScope Port Kembla",l:"NSW",g:"~3.2 Mt",x:"Crude steel capacity. Australia's only remaining BF-BOF works",s:SN,sn:"SteelOnTheNet"},
+  {n:"Whyalla",l:"SA",g:"1.2 Mt",x:"Nominal. In administration, blast furnace offline since April 2026",s:AB,sn:"ABC News, May 2026"},
+  {n:"InfraBuild and Molycop",l:"Australia",g:"~1.75 Mt",x:"Scrap-based EAF, no iron ore input",s:SN,sn:"SteelOnTheNet"},
+  {n:"Total crude steel",l:"2024",g:"4.7 Mt",x:"Down from 5.3 Mt in 2022 on Whyalla outages",s:SN,sn:"SteelOnTheNet"},
+  {n:"Port Kembla ore use",l:"2011–12",g:"~4.9 Mt",x:"For 3.5 Mt finished product, from Mt Newman and Savage River. Dated figure",s:BI,sn:"BITRE Freightline 2"}]}]},
+
+{id:"b",h:"Hematite, green iron",k:"pre",e:"1.4 → 0.4 target",v:"~0.0015 Mt/yr",s:[
+ {t:"Prepare feed",d:"Pilbara pellets are weak and cause sticking in a shaft furnace, so this step is either improved pelletising or skipping pellets entirely with fluidised-bed and flash reduction of fines.",p:[
+  {n:"ZESTY (Calix, Rio Tinto)",l:"Kwinana, WA",g:"Pre-FID",x:"30,000 tpa H2-DRI or HBI. ARENA A$44.9m, Rio A$35m JDA. Detailed design engineering",s:"https://calix.global/zesty-green-iron-demonstration-project/",sn:"Calix project page"},
+  {n:"ZESTY ore supply",l:"Rio Tinto",g:"Committed",x:"Up to 10,000 t of Pilbara ores for commissioning, subject to FID",s:RB,sn:"Rio Tinto, Nov 2025"},
+  {n:"BioIron",l:"Rio Tinto",g:"Paused",x:"Furnace design needs further development. ZESTY takes its Kwinana site",s:RB,sn:"Rio Tinto, Nov 2025"},
+  {n:"CSIRO pelletising research",l:"Australia",g:"Lab",x:"Testing whether the DRI operating envelope can widen for Pilbara ore",s:"https://www.csiro.au/en/news/all/articles/2026/march/green-metals",sn:"CSIRO, March 2026"}]},
+ {t:"Direct reduction",d:"Strips oxygen but leaves alumina, silica and phosphorus behind. Gas first, hydrogen later in every current Australian design.",p:[
+  {n:"NeoSmelt DRI plant",l:"Kwinana, WA",g:"FEED",x:"~50,000 t/yr DRI. Tenova ENERGIRON, gas or hydrogen, carbon-capture ready",s:"https://tenova.com/newsroom/press-releases/tenova-selected-australias-breakthrough-lower-emissions-ironmaking-pilot",sn:"Tenova, July 2025"},
+  {n:"Fortescue Green Metal",l:"Christmas Creek, WA",g:"Operating",x:"First hot metal Aug 2026 on blended feedstock. US$50m project",s:FM,sn:"Fortescue, Aug 2026"},
+  {n:"POSCO HyREX",l:"Pohang, Korea",g:"Pre-FID",x:"300,000 t/yr pilot targeted by 2028. Fluidised bed",s:"https://gmk.center/en/news/western-australia-has-approved-posco-s-plan-to-build-an-hbi-plant/",sn:"GMK Center, April 2026"},
+  {n:"BHP–Baowu trials",l:"Zhanjiang, China",g:"Lab",x:"Pilbara ore through Energiron DRI",u:1},
+  {n:"Ansteel HIFRI",l:"Bayuquan, China",g:"Operating",x:"~10 ktpa hydrogen fluidised bed",u:1}]},
+ {t:"Electric smelter",d:"The step that exists only because the ore is low grade. It slags off the gangue, producing 400 to 500 kg of slag per tonne against 100 to 150 for DR-grade feed.",p:[
+  {n:"NeoSmelt ESF",l:"Kwinana, WA",g:"FEED",x:"30–40 ktpa molten iron. Hatch CRISP+ technology. FID due 2026",s:"https://www.hatch.com/About-Us/News-And-Media/2025/07/NeoSmelt-consortium-selects-Hatch-to-design-Australias-largest",sn:"Hatch, July 2025"},
+  {n:"NeoSmelt funding",l:"Kwinana, WA",g:"A$94.8m",x:"ARENA A$19.8m for FEED plus WA Government A$75m",s:"https://arena.gov.au/projects/project-neosmelt/",sn:"ARENA, Woodside"},
+  {n:"NeoSmelt start date",l:"Source conflict",g:"2028 or 2029",x:"BlueScope, Rio and ARENA say 2028; the NeoSmelt project site says 2029",s:"https://www.neosmelt.au/",sn:"neosmelt.au vs BlueScope"},
+  {n:"Slag penalty",l:"Technical",g:"400–500 kg/t",x:"Against 100–150 kg/t for DR-grade feed. The cost penalty, expressed physically",s:"https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/11788159",sn:"US Patent 11788159"},
+  {n:"Fortescue Green Metal",l:"Christmas Creek, WA",g:"Operating",x:"Metso DRI smelting furnace, first hot metal Aug 2026",s:FM,sn:"Fortescue, Aug 2026"},
+  {n:"Hy4Smelt, thyssenkrupp OBF",l:"Europe",g:"Pre-FID",x:"Capacities not confirmed from primary sources",u:1}]},
+ {t:"Oxygen furnace",d:"ESF hot metal carries carbon and phosphorus like blast furnace pig iron, so it needs oxygen blowing. Australia's own BOF fleet is under 5 Mt, so most output would go to customers' steelworks.",p:[
+  {n:"Abatement claim",l:"NeoSmelt",g:"Up to 80%",x:"Versus blast furnace industry average, assuming renewable power and zero-emissions hydrogen",s:NS,sn:"Woodside/NeoSmelt release"},
+  {n:"Near-zero threshold",l:"IEA definition",g:"0.40 t/t",x:"CO₂-e per tonne crude steel, 100% ore-based. Implemented in ResponsibleSteel V2.0",s:NS,sn:"Woodside/NeoSmelt release"},
+  {n:"BlueScope Port Kembla",l:"NSW",g:"Operating",x:"~3.2 Mt/yr. The logical Australian destination for ESF hot metal",s:SN,sn:"SteelOnTheNet"},
+  {n:"No operating benchmark",l:"Global",g:"Gap",x:"A definition exists; operating emissions data for DRI-ESF does not"}]}]},
+
+{id:"c",h:"Magnetite, blend feed",k:"inc",dt:1,e:"≈2.3 t CO₂/t",v:"~42 Mt/yr",s:[
+ {t:"Grind, separate",d:"Concentrate was 4.7% of Western Australian production in 2025. This is the entire DR-grade-capable pool, and all three operating assets are currently under their nameplate.",p:[
+  {n:"Sino Iron",l:"Cape Preston, WA",g:"~14 Mt",x:"2024, downgraded on limited mine footprint. 65% Fe concentrate",s:"https://www.woodmac.com/reports/metals-sino-iron-iron-ore-mine-16573731/",sn:"Wood Mackenzie"},
+  {n:"Iron Bridge",l:"Pilbara, WA",g:"9.0 Mt",x:"FY26 shipments, up 27%. 22 Mtpa nameplate, 67% Fe",s:AM,sn:"Australian Mining, July 2026"},
+  {n:"Karara",l:"Midwest, WA",g:"~8 Mt",x:"100% concentrate. Phase two shelved indefinitely",s:SP,sn:"S&amp;P Global"},
+  {n:"Savage River",l:"Tasmania",g:"~2.4 Mt",x:"Pellets, blast furnace grade. Largely supplies Port Kembla",s:BI,sn:"BITRE Freightline 2"}]},
+ {t:"Ship concentrate",d:"The premium is real but it is a grade premium, not a green premium — earned today with no green steel market, no CBAM exposure and no offtake agreement. Any DR pellet business case has to clear this hurdle rate.",p:[
+  {n:"Iron Bridge concentrate",l:"FY26 realised",g:"$120.46",x:"Per dry metric tonne, 67% Fe",s:FR,sn:"Fortescue FY26 results"},
+  {n:"Fortescue hematite",l:"FY26 realised",g:"$90.66",x:"Per dry metric tonne. The concentrate premium is about a third",s:FR,sn:"Fortescue FY26 results"},
+  {n:"Iron Bridge impairment",l:"FY26",g:"A$747m",x:"Non-cash, on a revised timeline to reach 22 Mtpa nameplate",s:FR,sn:"Fortescue FY26 results"},
+  {n:"Australian magnetite record",l:"Sector",g:"Poor",x:"Karara phase one delayed and phase two shelved; Southdown never developed",s:SP,sn:"S&amp;P Global"}]},
+ {t:"Blast furnace",d:"DR-capable material entering a coal-based route. Higher grade cuts coke rate and slag volume at the margin, but the pathway and its emissions are unchanged.",p:[
+  {n:"Used as sinter blend",l:"Customer plants",g:"Blend feed",x:"Upgrades lower-grade feed rather than replacing the route",s:W,sn:"WATC WA Iron Ore Profile"},
+  {n:"Seaborne DR-grade supply",l:"Global",g:"Not Australia",x:"Brazil, Canada and Sweden dominate; Bahrain and Oman rely on imported concentrate",s:IE,sn:"IEEFA green iron tracker"}]},
+ {t:"Oxygen furnace",d:"Same destination as column one. The only Australian magnetite that stays onshore is Savage River pellet going into Port Kembla's blast furnace.",p:[
+  {n:"Savage River to Port Kembla",l:"Domestic",g:"~2.4 Mt",x:"Blended with Mt Newman hematite. Blast furnace grade, not DR grade",s:BI,sn:"BITRE Freightline 2"},
+  {n:"Everything else",l:"Export",g:"~40 Mt",x:"Leaves the country as blast furnace feed",s:W,sn:"Derived from WATC"}]}]},
+
+{id:"d",h:"Magnetite, DR-grade",k:"com",e:"1.4 → 0.4–0.8",v:"0 Mt/yr today",s:[
+ {t:"Grind, separate",d:"Identical to column three's first step. The divergence happens at step two, which is why this is a redirection problem rather than a new-mine problem.",p:[
+  {n:"Iron Bridge",l:"Pilbara, WA",g:"Operating",x:"22 Mtpa nameplate, 67% Fe, at rate by FY28",s:AM,sn:"Australian Mining"},
+  {n:"Sino Iron, Karara",l:"WA",g:"Operating",x:"~22 Mt combined. Both 100% concentrate producers",s:W,sn:"WATC, Wood Mackenzie"},
+  {n:"Razorback and Iron Peak",l:"SA",g:"Pre-FID",x:"5 Mtpa stage one. Iron Peak tests indicate 70% Fe, 2.6% silica plus alumina",s:"https://www.magnetitemines.com/razorback-iron-ore-project",sn:"Magnetite Mines"},
+  {n:"Central Eyre",l:"SA",g:"Pre-FID",x:"66.7% Fe concentrate. Original 24 Mtpa target since halved",s:IE,sn:"IEEFA green iron tracker"},
+  {n:"Hawsons Iron",l:"NSW",g:"Pre-FID",x:"Among the most advanced Australian magnetite deposits",s:IE,sn:"IEEFA green iron tracker"},
+  {n:"Australian magnetite deposits",l:"IEEFA dataset",g:"84",x:"WA holds more resources, SA more reserves via Central Eyre and Razorback",s:IE,sn:"IEEFA green iron tracker"}]},
+ {t:"DR-grade pellet",d:"Corrected. There is no operating DR-grade pellet plant in Australia, but one is now approved: the Port Hedland Iron Project at Boodarie includes a pellet plant alongside the HBI plant. The gap is a timing gap, not a structural one.",p:[
+  {n:"Port Hedland Iron, Boodarie",l:"WA",g:"Approved",x:"A$4.3bn. Pellet plant plus HBI plant, ~3–3.5 Mt/yr ore feed. Final WA approval April 2026",s:"https://www.steelorbis.com/steel-news/latest-news/posco-backed-hbi-project-in-western-australia-receives-final-approval-1446712.htm",sn:"SteelOrbis, April 2026"},
+  {n:"Boodarie pellet exports",l:"WA",g:"~0.7 Mt",x:"Pellets exported directly; the rest feeds the on-site HBI plant",s:"https://www.steelorbis.com/steel-news/latest-news/australia-approves-4-billion-port-hedland-hbi-project-to-produce-2-million-mt-annually-1406405.htm",sn:"SteelOrbis"},
+  {n:"No operating plant today",l:"Australia",g:"Gap",x:"~40 Mt/yr of concentrate still leaves as blast furnace blend feed",s:W,sn:"Derived from WATC"},
+  {n:"LKAB",l:"Sweden",g:"Operating",x:"The reference magnetite-based DR pellet supplier",s:IE,sn:"IEEFA green iron tracker"}]},
+ {t:"Shaft DRI",d:"Fully commercial technology with two established licensors. Australian DRI output was under 50,000 tonnes in 2022, essentially all imported. The constraint is capital and offtake, not engineering.",p:[
+  {n:"Port Hedland Iron, Boodarie",l:"WA",g:"Approved",x:"2 Mtpa HBI, MIDREX. POSCO 51%, Marubeni 24.5%, China Steel 24.5%. Awaiting JV FID",s:EP,sn:"EPA WA assessment"},
+  {n:"Whyalla",l:"SA",g:"Stalled",x:"1.8 Mtpa DRI was the GFG plan. Route now depends on the buyer",s:AB,sn:"ABC News, May 2026"},
+  {n:"Stegra",l:"Boden, Sweden",g:"Construction",x:"Refinanced €1.4bn in 2026, timeline under review, first steel targeted 2027",s:"https://stegra.com/en/news-and-stories/stegra-has-agreed-in-principle-on-a-14-billion-financing-round",sn:"Stegra"},
+  {n:"thyssenkrupp, Salzgitter",l:"Germany",g:"Construction",x:"Hydrogen tender on hold; SALCOS later stages postponed three years",u:1},
+  {n:"Vulcan Green Steel, HyIron",l:"Oman, Namibia",g:"Construction",x:"Capacities and offtakes not confirmed from primary sources",u:1}]},
+ {t:"EAF melting",d:"Low gangue means 100 to 150 kg of slag per tonne, so no smelter is needed. Australia's entire crude steel output is 4.7 Mt, so a domestic EAF is a small sink — the volume case is export HBI.",p:[
+  {n:"Boodarie output destination",l:"Export",g:"2 Mt HBI",x:"For conversion to low-emissions steel overseas, not in Australia",s:EP,sn:"EPA WA assessment"},
+  {n:"HYBRIT / SSAB",l:"Sweden",g:"Operating",x:"Demonstration operating, Luleå conversion underway",s:ID,sn:"IEEFA"},
+  {n:"InfraBuild",l:"Australia",g:"Operating",x:"~1.5 Mt/yr scrap EAF, the existing domestic sink",s:SN,sn:"SteelOnTheNet"},
+  {n:"Whyalla",l:"SA",g:"Stalled",x:"1.5 Mt EAF is the stated transition plan",s:AB,sn:"ABC News, May 2026"}]}]},
+
+{id:"e",h:"Any grade, electrolysis",k:"pre",e:"Near-zero, power-set",v:"0 Mt/yr",s:[
+ {t:"Prepare feed",d:"The only route indifferent to ore grade. Reduction and refining happen together in the cell, so this route would in principle apply to the whole 902 Mt rather than the 42 Mt.",p:[
+  {n:"Grade-agnostic claim",l:"Technical",g:"All grades",x:"Designed for medium and low-grade ores rather than scarce high-grade feed",s:ID,sn:"IEEFA"},
+  {n:"Electra, Element Zero",l:"USA, WA",g:"Lab",x:"Feed specifications not confirmed from primary sources",u:1}]},
+ {t:"Electrolytic cell",d:"Molten oxide electrolysis above 1,500°C producing liquid iron, or low-temperature aqueous electrolysis producing solid plate. Electricity dominates cost, so firmed cheap power is the binding constraint, not hydrogen.",p:[
+  {n:"Boston Metal",l:"Woburn USA, Brazil",g:"Lab",x:"Molten oxide. Serious technical setback at the Brazil plant in January 2026",s:ID,sn:"IEEFA, June 2026"},
+  {n:"Electra, Volteron, Fortescue",l:"Global",g:"Lab",x:"Project scales not confirmed from primary sources",u:1}]},
+ {t:"Iron metal out",d:"Molten oxide taps liquid iron ready for a furnace; low-temperature routes produce solid plate needing melting and consolidation. Different downstream requirements, rarely acknowledged in comparisons.",p:[
+  {n:"No operating plant",l:"Global",g:"Gap",x:"No electrolytic ironmaking at commercial scale anywhere",s:ID,sn:"IEEFA"}]},
+ {t:"EAF or refining",d:"Electrolytic iron is high purity, so downstream refining demand is low. In principle this route could bypass the BOF entirely — a design claim, not an operating result.",p:[
+  {n:"No operating plant",l:"Global",g:"Gap",x:"Downstream integration untested at scale",s:ID,sn:"IEEFA"}]}]}];
+
+var KC={com:["var(--go-bg)","var(--go-fg)"],pre:["var(--mid-bg)","var(--mid-fg)"],inc:["var(--neutral-bg)","var(--neutral-fg)"]};
+var GC={Operating:"go",Construction:"go",Approved:"go",Committed:"go",FEED:"mid",Lab:"mid","Pre-FID":"mid",Stalled:"stop",Paused:"stop",Gap:"stop"};
+var ci="d", si=1;
+
+function grid(){
+  var out="";
+  for(var j=0;j<D.length;j++){
+    var c=D[j];
+    out+='<div class="col"><div class="hd" style="background:'+KC[c.k][0]+';color:'+KC[c.k][1]+'">'+c.h+'</div>';
+    out+='<div class="vol" style="background:'+KC[c.k][0]+';color:'+KC[c.k][1]+'">'+c.v+'</div><div class="arrow">&#8595;</div>';
+    for(var i=0;i<c.s.length;i++){
+      out+='<button class="step" aria-pressed="'+(c.id===ci&&i===si)+'" onclick="sel(\''+c.id+'\','+i+')">'+c.s[i].t+'</button><div class="arrow">&#8595;</div>';
+    }
+    out+='<div class="emit" style="background:'+KC[c.k][0]+';color:'+KC[c.k][1]+'">'+c.e+'</div></div>';
+  }
+  document.getElementById("grid").innerHTML=out;
+}
+
+function panel(){
+  var c=null;
+  for(var j=0;j<D.length;j++){ if(D[j].id===ci) c=D[j]; }
+  var s=c.s[si];
+  document.getElementById("ctx").textContent=c.h+"  ·  "+c.v+"  ·  step "+(si+1)+" of 4";
+  document.getElementById("stt").textContent=s.t;
+  document.getElementById("std").textContent=s.d;
+  document.getElementById("cnt").textContent=s.p.length+" rows at this step";
+  var out="";
+  for(var i=0;i<s.p.length;i++){
+    var p=s.p[i], b;
+    if(c.dt){ b='<span class="badge plain">'+p.g+'</span>'; }
+    else{ var t=GC[p.g]||"neutral"; b='<span class="badge" style="background:var(--'+t+'-bg);color:var(--'+t+'-fg)">'+p.g+'</span>'; }
+    var tail = p.s ? ' <a class="src" href="'+p.s+'" target="_blank" rel="noopener">'+p.sn+' &#8599;</a>'
+                   : (p.u ? ' <span class="unver">unverified</span>' : '');
+    out+='<div class="row">'+b+'<div style="flex:1;min-width:0">'
+       +'<p class="rname">'+p.n+' <span class="rloc">'+p.l+'</span></p>'
+       +'<p class="rnote">'+p.x+tail+'</p></div></div>';
+  }
+  document.getElementById("list").innerHTML=out;
+}
+
+function sel(id,i){ ci=id; si=i; grid(); panel(); }
+grid(); panel();
+</script>
+</body>
+</html>
